@@ -1,47 +1,43 @@
-﻿using Common.Models;
+﻿using Common.Interfaces;
+using Common.Models;
 using Newtonsoft.Json;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace Common.Services
 {
-    public class BaseApiClient
+    public class BaseApiClient : IBaseApiClient
     {
-        private readonly HttpClient HttpClient;
+        public HttpClient HttpClient { get; }
 
         public BaseApiClient(HttpClient client) { HttpClient = client;}
 
-        public async Task<ApiResponse<T>> GetAsync<T>(string path) {
-            var response = await HttpClient.GetAsync(path);
-
-            return await CreateApiResponse<T>(response);
-        }
-        public async Task<ApiResponse<T>> DeleteAsync<T>(string path) {
-            var response = await HttpClient.DeleteAsync(path);
-
-            return await CreateApiResponse<T>(response);
-        }
-
-        public async Task<ApiResponse<T>> PostAsync<T>(string path, object content) {
-
-            var response = await HttpClient.PostAsync(path, new StringContent(JsonConvert.SerializeObject(content)));
-
-            return await CreateApiResponse<T>(response);
-        }
-        public async Task<ApiResponse<T>> PutAsync<T>(string path, object content) {
-
-            var response = await HttpClient.PutAsync(path, new StringContent(JsonConvert.SerializeObject(content)));
-
-            return await CreateApiResponse<T>(response);
-        }
-
-        private async Task<ApiResponse<T>> CreateApiResponse<T>(HttpResponseMessage message)
+        public async Task<ApiResponse<T>> GetAsync<T>(string url) where T : class
         {
-            return new ApiResponse<T>
+            return await CreateApiResponse<T>(await HttpClient.GetAsync(url));
+        }
+
+        public async Task<ApiResponse<T>> DeleteAsync<T>(string url) where T : class
+        {
+            return await CreateApiResponse<T>(await HttpClient.DeleteAsync(url));
+        }
+
+        public async Task<ApiResponse<T>> PostAsync<T>(string url, object payload) where T : class
+        {
+            return await CreateApiResponse<T>(await HttpClient.PostAsJsonAsync(url, payload));
+        }
+
+        public async Task<ApiResponse<T>> PutAsync<T>(string url, object payload) where T : class
+        {
+            return await CreateApiResponse<T>(await HttpClient.PutAsJsonAsync(url, payload));
+        }
+
+        private async Task<ApiResponse<T>> CreateApiResponse<T>(HttpResponseMessage message) where T : class
+        {
+            return new ApiResponse<T>(message)
             {
-                IsSuccess = message.IsSuccessStatusCode,
-                Data = message.IsSuccessStatusCode ? JsonConvert.DeserializeObject<T>(await message.Content.ReadAsStringAsync()) : default,
-                Error = !message.IsSuccessStatusCode ? message.ReasonPhrase : null
+                Data = message.IsSuccessStatusCode ? JsonConvert.DeserializeObject<T>(await message.Content.ReadAsStringAsync()) : null,
             };
         }
     }

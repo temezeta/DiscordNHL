@@ -13,20 +13,12 @@ namespace DiscordNHL
     public class Startup
     {
         public IConfigurationRoot Configuration { get; }
-        public IConfigurationRoot Env { get; }
 
         public Startup(string[] args)
         {
-            Env = new ConfigurationBuilder()
-                .AddEnvironmentVariables()
-                .Build();
-
-            var environment = Env["RUNTIME_ENVIRONMENT"];
-
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appSettings.json", optional: false, reloadOnChange: true)
-                .AddJsonFile($"appSettings.{environment ?? "Production"}.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .AddUserSecrets<Program>()
                 .Build();
@@ -67,8 +59,9 @@ namespace DiscordNHL
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<StartupService>()
                 .AddSingleton(Configuration)
-                .AddSingleton<INHLDataProvider, NHLDataProvider>()
-                .AddHttpClient<INHLDataProvider, NHLDataProvider>((client) =>
+                .AddSingleton<INHLDataProvider, NHLDataProvider>();
+
+                services.AddHttpClient<INHLDataProvider, NHLDataProvider>((client) =>
                 {
                     client.BaseAddress = new Uri(Configuration["URL:NHL"]);
                     client.DefaultRequestHeaders.Accept.Clear();
