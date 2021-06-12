@@ -1,6 +1,6 @@
 ﻿namespace DiscordNHL.Dtos.StatsAPI
 {
-    public class ConferenceDto : CommonAttributes
+    public class ConferenceDto : CommonProperties
     {
         public string Abbreviation { get; set; }
         public string ShortName { get; set; }

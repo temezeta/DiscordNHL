@@ -1,6 +1,6 @@
 ﻿namespace DiscordNHL.Dtos.StatsAPI
 {
-    public class FranchiseDto : LinkAttribute
+    public class FranchiseDto : LinkProperty
     {
         public int FranchiseId { get; set; }
         public int? FirstSeasonId { get; set; }

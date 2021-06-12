@@ -8,19 +8,19 @@ namespace DiscordNHL.Services
 {
     public class CommandHandler
     {
-        public static IServiceProvider _provider;
-        public static DiscordSocketClient _discord;
+        public static IServiceProvider Services;
+        public static DiscordSocketClient Discord;
         public static CommandService _commands;
-        public static IConfigurationRoot _config;
+        public static IConfigurationRoot Configuration;
         public CommandHandler(DiscordSocketClient discord, CommandService commands, IConfigurationRoot config, IServiceProvider provider)
         {
-            _provider = provider;
-            _discord = discord;
+            Services = provider;
+            Discord = discord;
             _commands = commands;
-            _config = config;
+            Configuration = config;
 
-            _discord.Ready += OnReady;
-            _discord.MessageReceived += OnMessageReceived;
+            Discord.Ready += OnReady;
+            Discord.MessageReceived += OnMessageReceived;
         }
 
         private async Task OnMessageReceived(SocketMessage arg)
@@ -29,13 +29,13 @@ namespace DiscordNHL.Services
 
             if (msg.Author.IsBot) return;
 
-            var context = new SocketCommandContext(_discord, msg);
+            var context = new SocketCommandContext(Discord, msg);
 
             int position = 0;
 
-            if(msg.HasStringPrefix(_config["prefix"], ref position) || msg.HasMentionPrefix(_discord.CurrentUser, ref position))
+            if(msg.HasStringPrefix(Configuration["prefix"], ref position) || msg.HasMentionPrefix(Discord.CurrentUser, ref position))
             {
-                var result = await _commands.ExecuteAsync(context, position, _provider);
+                var result = await _commands.ExecuteAsync(context, position, Services);
 
                 if (!result.IsSuccess)
                 {
@@ -49,7 +49,7 @@ namespace DiscordNHL.Services
 
         private Task OnReady()
         {
-            Console.WriteLine($"Connected as {_discord.CurrentUser.Username}#{_discord.CurrentUser.Discriminator}");
+            Console.WriteLine($"Connected as {Discord.CurrentUser.Username}#{Discord.CurrentUser.Discriminator}");
             return Task.CompletedTask;
         }
     }

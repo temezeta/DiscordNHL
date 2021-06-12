@@ -8,7 +8,7 @@ namespace DiscordNHL.Dtos.StatsAPI
         public int TotalEvent { get; set; }
         public int TotalGames { get; set; }
         public int TotalMatches { get; set; }
-        public MetadataAttribute MetaData { get; set; }
+        public MetadataProperty MetaData { get; set; }
         public IList<DateDto> Dates { get; set; }
 
     }

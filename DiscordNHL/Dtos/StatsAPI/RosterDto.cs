@@ -2,7 +2,7 @@
 
 namespace DiscordNHL.Dtos.StatsAPI
 {
-    public class RosterDto : LinkAttribute
+    public class RosterDto : LinkProperty
     {
         public IList<PlayerDto> Roster { get; set; }
     }

@@ -1,6 +1,6 @@
 ﻿namespace DiscordNHL.Dtos.StatsAPI
 {
-    public class LinkAttribute
+    public class LinkProperty
     {
         public string Link { get; set; }
     }

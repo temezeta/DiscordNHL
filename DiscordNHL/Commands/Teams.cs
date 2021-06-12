@@ -1,5 +1,8 @@
-﻿using Discord.Commands;
+﻿using Discord;
+using Discord.Commands;
+using DiscordNHL.Extensions;
 using DiscordNHL.Integrations;
+using DiscordNHL.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,7 +22,7 @@ namespace DiscordNHL.Commands
         {
             try
             {
-                var response = await _provider.GetFullTeams();
+                var response = await _provider.GetTeams();
 
                 if (response.IsSuccess)
                 {
@@ -31,18 +34,23 @@ namespace DiscordNHL.Commands
 
                     if (team != null)
                     {
-                        // TODO
-                        await Context.Channel.SendMessageAsync(team.Name);
+
+                        var embed = new EmbedBuilder()
+                            .AddGeneralFields(CommandHandler.Discord)
+                            .AddNHLDataFields(team.ToEmbedData())
+                            .Build();
+
+                        await Context.Channel.SendMessageAsync(null, false, embed);
                     }
                     else
                     {
-                        throw new ArgumentNullException();
+                        await Context.Channel.SendMessageAsync($"Team with search {search} not found");
                     }
                 }
             }
             catch
             {
-                await Context.Channel.SendMessageAsync($"Team with search {search} not found");
+                await Context.Channel.SendMessageAsync($"An error occured");
             }
         }
     }

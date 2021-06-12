@@ -1,6 +1,6 @@
 ﻿namespace DiscordNHL.Dtos.StatsAPI
 {
-    public class MetadataAttribute
+    public class MetadataProperty
     {
         public string TimeStamp { get; set; }
     }
