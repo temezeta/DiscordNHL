@@ -48,8 +48,8 @@ namespace DiscordNHL.Extensions
                 var roster = team.Roster.Roster;
 
                 var playerTypes = roster?
-                    .Where(it => it.Person?.FullName != null && it.Position?.Name != null && it.Position?.Type != null)
-                    .OrderBy(it => it.Position.Name)
+                    .Where(it => it.Person?.FullName != null && it.Position?.Abbreviation != null && it.Position?.Type != null)
+                    .OrderBy(it => it.Position.Abbreviation)
                     .ThenBy(it => it.Person.FullName)
                     .GroupBy(it => it.Position.Type);
 
@@ -61,7 +61,7 @@ namespace DiscordNHL.Extensions
                 embedData.Data.Add(new EmbedValue("Goalies", goalieNames));
                 var defenseNames = string.Join("\n", defense?.Select(it => string.Join(", ", it.Person.FullName,  GetJerseyNumberString(it.JerseyNumber))));
                 embedData.Data.Add(new EmbedValue("Defensemen", defenseNames));
-                var forwardNames = string.Join("\n", forwards?.Select(it => string.Join(", ", it.Person.FullName, it.Position.Name, GetJerseyNumberString(it.JerseyNumber))));
+                var forwardNames = string.Join("\n", forwards?.Select(it => string.Join(", ", it.Person.FullName, it.Position.Abbreviation, GetJerseyNumberString(it.JerseyNumber))));
                 embedData.Data.Add(new EmbedValue("Forwards", forwardNames));
             }
 

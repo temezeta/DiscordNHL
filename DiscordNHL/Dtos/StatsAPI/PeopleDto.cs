@@ -19,7 +19,7 @@
         public bool Rookie { get; set; }
         public string ShootsCatches { get; set; }
         public string RosterStatus { get; set; }
-        public TeamDto CurrentTeam { get; set; }
+        public CommonProperties CurrentTeam { get; set; }
         public PositionDto PrimaryPosition { get; set; }
     }
 }
