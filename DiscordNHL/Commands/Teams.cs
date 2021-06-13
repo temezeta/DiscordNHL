@@ -130,6 +130,44 @@ namespace DiscordNHL.Commands
             }
         }
 
+        [Command("upcoming")]
+        [Alias("u")]
+        public async Task GetTeamUpcomingGamesByAbbreviation(string abbreviation) 
+        {
+            try
+            {
+                var id = await GetTeamIdByAbbreviation(abbreviation);
+
+                var response = await _provider.GetFullTeamById(id);
+                var isCommandSuccess = false;
+
+                if (response.IsSuccess)
+                {
+                    var team = response.Data.Teams.FirstOrDefault();
+
+                    if (team != null)
+                    {
+
+                        var embed = new EmbedBuilder()
+                            .AddGeneralFields(CommandHandler.Discord)
+                            .AddNHLDataFields(team.ToGamesEmbedData(false))
+                            .Build();
+
+                        isCommandSuccess = true;
+                        await Context.Channel.SendMessageAsync(null, false, embed);
+                    }
+                }
+                if (!isCommandSuccess)
+                {
+                    await Context.Channel.SendMessageAsync($"Team upcoming schedule with abbreviation {abbreviation} not found");
+                }
+            }
+            catch
+            {
+                await Context.Channel.SendMessageAsync($"An error occured");
+            }
+        }
+
         private async Task<int> GetTeamIdByAbbreviation(string abbreviation) {
             var abbrev = abbreviation.ToUpper();
 

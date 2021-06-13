@@ -10,7 +10,7 @@ namespace DiscordNHL.Dtos.StatsAPI
         public DateTime GameDate { get; set; }
         public StatusDto Status { get; set; }
         public GameTeamsDto Teams { get; set; }
-        public VenueDto Venue { get; set; }
+        public CommonProperties Venue { get; set; }
         public LinkProperty Content { get; set; }
     }
 }

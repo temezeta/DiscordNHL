@@ -3,6 +3,7 @@ using DiscordNHL.Helpers;
 using DiscordNHL.Models;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace DiscordNHL.Extensions
 {
@@ -119,6 +120,38 @@ namespace DiscordNHL.Extensions
             return embedData;
         }
 
+        public static EmbedData ToGamesEmbedData(this TeamDto team, bool previousGames = false) 
+        {
+            var embedData = new EmbedData
+            {
+                Title = team.Name,
+                Description = $"{(previousGames ? "Previous" : "Upcoming")} games for the {team.TeamName}",
+                Url = team.OfficialSiteUrl
+            };
+
+            embedData.Data = new List<EmbedValue>();
+
+            var schedule = previousGames ? team.PreviousGameSchedule : team.NextGameSchedule;
+
+            if (schedule?.Dates != null)
+            {
+                var gameDates = schedule.Dates.Where(it => it.Games != null && it.Games.Count != 0);
+
+                foreach (var date in gameDates)
+                {
+                    var dateString = date.Games.FirstOrDefault().GameDate.ToString("dd.MM.yyyy");
+                    embedData.Data.Add(new EmbedValue(dateString, GetGamesDataString(date.Games)));
+                }
+            }
+
+            if (embedData.Data?.Count == 0)
+            {
+                embedData.Description = $"No {(previousGames ? "previous" : "upcoming")} games found";
+            }
+
+            return embedData;
+        }
+
         private static string GetJerseyNumberString(string jerseyNumber) {
             if(jerseyNumber != null)
             {
@@ -126,6 +159,29 @@ namespace DiscordNHL.Extensions
             }
 
             return null;
+        }
+
+        private static string GetGamesDataString(IList<GameDto> games) 
+        {
+            var builder = new StringBuilder();
+
+            games = games
+                .Where(it => it.GameDate != null 
+                && it.Teams?.Home?.Team != null 
+                && it.Teams?.Away?.Team != null
+                && it.Venue != null)
+                .ToList();
+
+            foreach (var game in games)
+            {
+                builder.Append($"{game.GameDate.ToString("dd.MM.yyyy HH:mm \"GMT\"")} ");
+                builder.Append($"at {game.Venue.Name}");
+                builder.Append("\n");
+                builder.Append($"{game.Teams.Home.Team.Name} vs {game.Teams.Away.Team.Name}");
+                builder.Append("\n\n");
+            }
+
+            return builder.ToString();
         }
     }
 }
