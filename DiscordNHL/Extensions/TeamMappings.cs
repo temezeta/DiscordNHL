@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace DiscordNHL.Extensions
 {
-    public static class Mappings
+    public static class TeamMappings
     {
         public static EmbedData ToTeamEmbedData(this TeamDto team)
         {
@@ -46,8 +46,8 @@ namespace DiscordNHL.Extensions
 
                 var playerTypes = roster?
                     .Where(it => it.Person?.FullName != null && it.Position?.Name != null && it.Position?.Type != null)
-                    .OrderBy(it => it.Person.FullName)
-                    .ThenBy(it => it.Position.Name)
+                    .OrderBy(it => it.Position.Name)
+                    .ThenBy(it => it.Person.FullName)
                     .GroupBy(it => it.Position.Type);
 
                 var goalies = playerTypes?.FirstOrDefault(it => it.Key == "Goalie");
@@ -65,6 +65,50 @@ namespace DiscordNHL.Extensions
             if (embedData.Data.Count == 0) 
             {
                 embedData.Description = "No active roster players found";
+            }
+
+            return embedData;
+        }
+
+        public static EmbedData ToStatsEmbedData(this TeamDto team) 
+        {
+            var embedData = new EmbedData
+            {
+                Title = team.Name,
+                Description = $"Current season stats of the {team.TeamName}",
+                Url = team.OfficialSiteUrl
+            };
+
+            embedData.Data = new List<EmbedValue>();
+
+            if (team.TeamStats != null)
+            {
+                var regSeasonStats = team.TeamStats.FirstOrDefault(it => it.Type?.GameType?.Id == "R");
+
+                if (regSeasonStats?.Splits?.Count != 0) 
+                {
+                    var stats = regSeasonStats.Splits.FirstOrDefault().Stat;
+
+                    embedData.Data = new List<EmbedValue>
+                    {
+                        new EmbedValue("Games played", stats.GamesPlayed),
+                        new EmbedValue("Wins", stats.Wins),
+                        new EmbedValue("Losses", stats.Losses),
+                        new EmbedValue("OT losses", stats.Ot),
+                        new EmbedValue("Points", stats.Pts),
+                        new EmbedValue("Goals for avg", stats.GoalsPerGame),
+                        new EmbedValue("Goals against avg", stats.GoalsAgainstPerGame),
+                        new EmbedValue("Save percentage", (stats.SavePctg * 100)?.ToString("#.#")),
+                        new EmbedValue("PP Percentage", stats.PowerPlayPercentage),
+                        new EmbedValue("PK Percentage", stats.PenaltyKillPercentage),
+                    };
+
+                }
+            }
+
+            if (embedData.Data?.Count == 0)
+            {
+                embedData.Description = "No stats found";
             }
 
             return embedData;

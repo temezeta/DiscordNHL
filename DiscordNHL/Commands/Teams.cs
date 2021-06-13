@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.Commands;
-using DiscordNHL.Dtos.StatsAPI;
 using DiscordNHL.Extensions;
 using DiscordNHL.Integrations;
 using DiscordNHL.Services;
@@ -26,6 +25,7 @@ namespace DiscordNHL.Commands
                 var id = await GetTeamIdByAbbreviation(abbreviation);
 
                 var response = await _provider.GetTeamById(id);
+                var isCommandSuccess = false;
 
                 if (response.IsSuccess) {
                     var team = response.Data.Teams.FirstOrDefault();
@@ -38,12 +38,13 @@ namespace DiscordNHL.Commands
                             .AddNHLDataFields(team.ToTeamEmbedData())
                             .Build();
 
+                        isCommandSuccess = true;
                         await Context.Channel.SendMessageAsync(null, false, embed);
                     }
-                    else
-                    {
-                        await Context.Channel.SendMessageAsync($"Team with search {abbreviation} not found");
-                    }
+                }
+                if(!isCommandSuccess)
+                {
+                    await Context.Channel.SendMessageAsync($"Team with abbreviation {abbreviation} not found");
                 }
             }
             catch
@@ -53,13 +54,15 @@ namespace DiscordNHL.Commands
         }
 
         [Command("roster")]
-        public async Task GetTeamRosterByAbbreviation(string abbreviation)
+        [Alias("r")]
+        public async Task GetTeamRosterByAbbreviation(string abbreviation, string season = null)
         {
             try
             {
                 var id = await GetTeamIdByAbbreviation(abbreviation);
 
-                var response = await _provider.GetFullTeamById(id);
+                var response = await _provider.GetFullTeamById(id, season);
+                var isCommandSuccess = false;
 
                 if (response.IsSuccess)
                 {
@@ -73,15 +76,55 @@ namespace DiscordNHL.Commands
                             .AddNHLDataFields(team.ToRosterEmbedData())
                             .Build();
 
+                        isCommandSuccess = true;
                         await Context.Channel.SendMessageAsync(null, false, embed);
-                    }
-                    else
-                    {
-                        await Context.Channel.SendMessageAsync($"Team roster with search {abbreviation} not found");
-                    }
+                    } 
+                }
+
+                if (!isCommandSuccess) 
+                {
+                    await Context.Channel.SendMessageAsync($"Team roster with abbreviation {abbreviation} not found");
                 }
             }
-            catch (Exception ex)
+            catch
+            {
+                await Context.Channel.SendMessageAsync($"An error occured");
+            }
+        }
+
+        [Command("stats")]
+        [Alias("s")]
+        public async Task GetTeamStatsByAbbreviation(string abbreviation, string season = null) 
+        {
+            try
+            {
+                var id = await GetTeamIdByAbbreviation(abbreviation);
+
+                var response = await _provider.GetFullTeamById(id, season);
+                var isCommandSuccess = false;
+
+                if (response.IsSuccess)
+                {
+                    var team = response.Data.Teams.FirstOrDefault();
+
+                    if (team != null)
+                    {
+
+                        var embed = new EmbedBuilder()
+                            .AddGeneralFields(CommandHandler.Discord)
+                            .AddNHLDataFields(team.ToStatsEmbedData())
+                            .Build();
+
+                        isCommandSuccess = true;
+                        await Context.Channel.SendMessageAsync(null, false, embed);
+                    }
+                }
+                if(!isCommandSuccess)
+                {
+                    await Context.Channel.SendMessageAsync($"Team stats with abbreviation {abbreviation} not found");
+                }
+            }
+            catch
             {
                 await Context.Channel.SendMessageAsync($"An error occured");
             }

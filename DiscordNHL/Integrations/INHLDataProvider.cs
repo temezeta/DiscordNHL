@@ -10,6 +10,6 @@ namespace DiscordNHL.Integrations
         Task<ApiResponse<TeamsDto>> GetTeams();
         Task<ApiResponse<TeamsDto>> GetTeamById(int id);
         Task<ApiResponse<TeamsDto>> GetFullTeams();
-        Task<ApiResponse<TeamsDto>> GetFullTeamById(int id);
+        Task<ApiResponse<TeamsDto>> GetFullTeamById(int id, string season = null);
     }
 }
