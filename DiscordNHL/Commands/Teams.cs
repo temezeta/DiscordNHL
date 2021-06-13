@@ -73,7 +73,7 @@ namespace DiscordNHL.Commands
 
                         var embed = new EmbedBuilder()
                             .AddGeneralFields(CommandHandler.Discord)
-                            .AddNHLDataFields(team.ToRosterEmbedData())
+                            .AddNHLDataFields(team.ToRosterEmbedData(season))
                             .Build();
 
                         isCommandSuccess = true;
@@ -112,7 +112,7 @@ namespace DiscordNHL.Commands
 
                         var embed = new EmbedBuilder()
                             .AddGeneralFields(CommandHandler.Discord)
-                            .AddNHLDataFields(team.ToStatsEmbedData())
+                            .AddNHLDataFields(team.ToStatsEmbedData(season))
                             .Build();
 
                         isCommandSuccess = true;

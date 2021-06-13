@@ -1,4 +1,5 @@
 ﻿using DiscordNHL.Dtos.StatsAPI;
+using DiscordNHL.Helpers;
 using DiscordNHL.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,12 +31,14 @@ namespace DiscordNHL.Extensions
             return embedData;
         }
 
-        public static EmbedData ToRosterEmbedData(this TeamDto team) 
+        public static EmbedData ToRosterEmbedData(this TeamDto team, string season = null) 
         {
+            var realSeason = SeasonYearHelper.Trim(season);
+
             var embedData = new EmbedData
             {
                 Title = team.Name,
-                Description = $"Roster of the {team.TeamName}",
+                Description = string.Join(" ",$"Roster of the {team.TeamName}", realSeason != null ? $"for season {SeasonYearHelper.ToLongForm(realSeason)}" : "for current season"),
                 Url = team.OfficialSiteUrl
             };
 
@@ -70,12 +73,14 @@ namespace DiscordNHL.Extensions
             return embedData;
         }
 
-        public static EmbedData ToStatsEmbedData(this TeamDto team) 
+        public static EmbedData ToStatsEmbedData(this TeamDto team, string season = null) 
         {
+            var realSeason = SeasonYearHelper.Trim(season);
+
             var embedData = new EmbedData
             {
                 Title = team.Name,
-                Description = $"Current season stats of the {team.TeamName}",
+                Description = string.Join(" ", $"Stats of the {team.TeamName}", realSeason != null ? $"for season {SeasonYearHelper.ToLongForm(realSeason)}" : "for current season"),
                 Url = team.OfficialSiteUrl
             };
 
