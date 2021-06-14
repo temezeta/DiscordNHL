@@ -2,6 +2,8 @@
 using Common.Services;
 using NHLStats.Dtos;
 using NHLStats.Helpers;
+using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,45 +19,24 @@ namespace NHLStats
             return await GetAsync<ConferencesDto>("conferences");
         }
 
-        public async Task<ApiResponse<TeamsDto>> GetTeams()
+        public async Task<ApiResponse<TeamsDto>> GetTeams(IList<QueryData> queries = null)
         {
-            return await GetAsync<TeamsDto>("teams");
+            return await GetAsync<TeamsDto>(BuildUrl("teams", queries));
         }
 
-        public async Task<ApiResponse<TeamsDto>> GetTeamById(int id)
+        public async Task<ApiResponse<TeamsDto>> GetTeamById(int? id, IList<QueryData> queries = null)
         {
-            return await GetAsync<TeamsDto>($"teams/{id}");
-        }
-
-        public async Task<ApiResponse<TeamsDto>> GetFullTeams()
-        {
-            return await GetAsync<TeamsDto>("teams?expand=team.schedule.next,team.schedule.previous,team.roster,team.stats");
-        }
-
-        public async Task<ApiResponse<TeamsDto>> GetFullTeamById(int id, string season = null)
-        {
-            var url = $"teams/{id}?expand=team.schedule.next,team.schedule.previous,team.roster,team.stats";
-
-            if (season != null) 
+            if (id == null)
             {
-                url += $"&season={SeasonYearHelper.Trim(season)}";
+                return null;
             }
 
-            return await GetAsync<TeamsDto>(url);
+            return await GetAsync<TeamsDto>(BuildUrl($"teams/{id}", queries));
         }
 
-        public async Task<ApiResponse<GameScheduleDto>> GetSchedule(int? teamId = null, string startDate = null, string endDate = null) 
+        public async Task<ApiResponse<GameScheduleDto>> GetSchedule(IList<QueryData> queries = null) 
         {
-            var builder = new StringBuilder("schedule?");
-
-            var query = string.Join("&",
-                teamId != null ? $"teamId={teamId}" : null,
-                startDate != null ? $"startDate={startDate}" : null,
-                endDate != null ? $"endDate={endDate}" : null);
-
-            builder.Append(query);
-
-            return await GetAsync<GameScheduleDto>(builder.ToString());
+            return await GetAsync<GameScheduleDto>(BuildUrl("schedule", queries));
         }
 
     }

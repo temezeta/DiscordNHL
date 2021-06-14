@@ -6,6 +6,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using NHLStats.Extensions;
+using System.Collections.Generic;
+using Common.Models;
+using NHLStats.Helpers;
 
 namespace DiscordNHL.Commands
 {
@@ -24,11 +27,13 @@ namespace DiscordNHL.Commands
             {
                 var id = await StaticNHLDataService.GetTeamIdByAbbreviation(abbreviation);
 
-                var response = await _provider.GetTeamById(id ?? -1);
+                var response = await _provider.GetTeamById(id);
+
                 var isCommandSuccess = false;
 
                 if (response.IsSuccess) {
-                    var team = response.Data.Teams.FirstOrDefault();
+                    var team = response.Data?.Teams?.FirstOrDefault();
+
                     if (team != null)
                     {
 
@@ -60,12 +65,17 @@ namespace DiscordNHL.Commands
             {
                 var id = await StaticNHLDataService.GetTeamIdByAbbreviation(abbreviation);
 
-                var response = await _provider.GetFullTeamById(id ?? -1, season);
+                var response = await _provider.GetTeamById(id, new List<QueryData>
+                {
+                    new QueryData("expand", "team.roster"),
+                    new QueryData("season", SeasonYearHelper.Trim(season))
+                });
+
                 var isCommandSuccess = false;
 
                 if (response.IsSuccess)
                 {
-                    var team = response.Data.Teams.FirstOrDefault();
+                    var team = response.Data?.Teams?.FirstOrDefault();
 
                     if (team != null)
                     {
@@ -99,7 +109,12 @@ namespace DiscordNHL.Commands
             {
                 var id = await StaticNHLDataService.GetTeamIdByAbbreviation(abbreviation);
 
-                var response = await _provider.GetFullTeamById(id ?? -1, season);
+                var response = await _provider.GetTeamById(id, new List<QueryData>
+                {
+                    new QueryData("expand", "team.stats"),
+                    new QueryData("season", SeasonYearHelper.Trim(season))
+                });
+
                 var isCommandSuccess = false;
 
                 if (response.IsSuccess)
@@ -138,9 +153,17 @@ namespace DiscordNHL.Commands
                 abbreviation = abbreviation.ToUpper() == "ALL" ? null : abbreviation;
 
                 var id = await StaticNHLDataService.GetTeamIdByAbbreviation(abbreviation);
+
                 var isCommandSuccess = false;
-                var teams = id != null ? await _provider.GetTeamById(id.Value) : null;
-                var schedule = await _provider.GetSchedule(id, startDate, endDate);
+
+                var teams = await _provider.GetTeamById(id);
+
+                var schedule = await _provider.GetSchedule(new List<QueryData>
+                {
+                    new QueryData("id", id),
+                    new QueryData("startDate", startDate),
+                    new QueryData("endDate", endDate)
+                });
 
                 if (schedule.IsSuccess)
                 {
