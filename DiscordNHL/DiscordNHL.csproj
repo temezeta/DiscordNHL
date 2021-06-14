@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
 	<LangVersion>latest</LangVersion>
 	<UserSecretsId>5695ceff-6ae5-4f87-b0c2-f07a312f92cd</UserSecretsId>
   </PropertyGroup>
@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\NHLStats\NHLStats.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,9 +1,9 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
-using DiscordNHL.Integrations;
 using DiscordNHL.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NHLStats;
 using System;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;

@@ -1,11 +1,11 @@
 ﻿using Discord;
 using Discord.Commands;
-using DiscordNHL.Extensions;
-using DiscordNHL.Integrations;
+using NHLStats;
 using DiscordNHL.Services;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using NHLStats.Extensions;
 
 namespace DiscordNHL.Commands
 {
@@ -34,7 +34,7 @@ namespace DiscordNHL.Commands
                     {
 
                         var embed = new EmbedBuilder()
-                            .AddGeneralFields(CommandHandler.Discord)
+                            .AddGeneralFields()
                             .AddNHLDataFields(team.ToTeamEmbedData())
                             .Build();
 
@@ -72,7 +72,7 @@ namespace DiscordNHL.Commands
                     {
 
                         var embed = new EmbedBuilder()
-                            .AddGeneralFields(CommandHandler.Discord)
+                            .AddGeneralFields()
                             .AddNHLDataFields(team.ToRosterEmbedData(season))
                             .Build();
 
@@ -111,7 +111,7 @@ namespace DiscordNHL.Commands
                     {
 
                         var embed = new EmbedBuilder()
-                            .AddGeneralFields(CommandHandler.Discord)
+                            .AddGeneralFields()
                             .AddNHLDataFields(team.ToStatsEmbedData(season))
                             .Build();
 
@@ -149,7 +149,7 @@ namespace DiscordNHL.Commands
                     {
 
                         var embed = new EmbedBuilder()
-                            .AddGeneralFields(CommandHandler.Discord)
+                            .AddGeneralFields()
                             .AddNHLDataFields(team.ToGamesEmbedData(false))
                             .Build();
 

@@ -1,15 +1,12 @@
 ﻿using Discord.Commands;
-using DiscordNHL.Integrations;
 using System.Threading.Tasks;
 
 namespace DiscordNHL.Commands
 {
     public class General : ModuleBase
     {
-        public readonly INHLDataProvider _provider;
-        public General(INHLDataProvider provider)
+        public General()
         {
-            _provider = provider;
         }
         [Command("ping")]
         public async Task Ping()
