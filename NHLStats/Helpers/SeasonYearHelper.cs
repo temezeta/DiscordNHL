@@ -35,6 +35,11 @@ namespace NHLStats.Helpers
 
         public static string ToLongForm(string season) 
         {
+            if (season == null) 
+            {
+                return null;
+            }
+
             if (CorrectRegex.IsMatch(season)) 
             {
                 season = season.Insert(4, "-");

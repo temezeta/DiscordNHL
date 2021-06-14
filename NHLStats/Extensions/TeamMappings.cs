@@ -154,6 +154,41 @@ namespace NHLStats.Extensions
             return embedData;
         }
 
+        public static EmbedData ToStandingsEmbedData(this StandingsDto standings, string season = null) 
+        {
+            var realSeason = SeasonYearHelper.Trim(season);
+
+
+            var embedData = new EmbedData
+            {
+                Title = $"Standings",
+                Description = $"Standings for {SeasonYearHelper.ToLongForm(realSeason) ?? "current"} season",
+                Url = $"https://www.nhl.com/standings/{season?.Substring(0, 4)}",
+                Data = new List<EmbedValue>()
+            };
+
+
+            var records = standings.Records;
+
+            if (records != null) 
+            {
+                foreach (var record in records)
+                {
+                    if (record?.Division != null && record?.TeamRecords != null) 
+                    {
+                        embedData.Data.Add(new EmbedValue(record.Division.Name, GetStandingsRecordString(record)));
+                    }
+                }
+            }
+
+            if (embedData.Data?.Count == 0)
+            {
+                embedData.Description = $"No standings found";
+            }
+
+            return embedData;
+        }
+
         private static string GetJerseyNumberString(string jerseyNumber) {
             if(jerseyNumber != null)
             {
@@ -181,6 +216,21 @@ namespace NHLStats.Extensions
                 builder.Append($"{game.Teams.Home.Team.Name} vs {game.Teams.Away.Team.Name}");
                 builder.Append("\n\n");
             }
+
+            return builder.ToString();
+        }
+
+        private static string GetStandingsRecordString(RecordDto record) 
+        {
+            var builder = new StringBuilder();
+
+            int index = 1;
+            foreach (var teamRecord in record.TeamRecords.OrderBy(it => it.DivisionRank))
+            {
+                builder.AppendLine($"{index}. {teamRecord.Team?.Name} {teamRecord.Points}p");
+                index++;
+            }
+            builder.AppendLine("");
 
             return builder.ToString();
         }

@@ -1,11 +1,8 @@
 ﻿using Common.Models;
 using Common.Services;
 using NHLStats.Dtos;
-using NHLStats.Helpers;
-using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace NHLStats
@@ -39,5 +36,9 @@ namespace NHLStats
             return await GetAsync<GameScheduleDto>(BuildUrl("schedule", queries));
         }
 
+        public async Task<ApiResponse<StandingsDto>> GetStandings(IList<QueryData> queries = null) 
+        {
+            return await GetAsync<StandingsDto>(BuildUrl("standings/regularSeason", queries));
+        }
     }
 }

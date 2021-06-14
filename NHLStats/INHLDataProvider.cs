@@ -11,5 +11,6 @@ namespace NHLStats
         Task<ApiResponse<TeamsDto>> GetTeams(IList<QueryData> queries = null);
         Task<ApiResponse<TeamsDto>> GetTeamById(int? id, IList<QueryData> queries = null);
         Task<ApiResponse<GameScheduleDto>> GetSchedule(IList<QueryData> queries = null);
+        Task<ApiResponse<StandingsDto>> GetStandings(IList<QueryData> queries = null);
     }
 }

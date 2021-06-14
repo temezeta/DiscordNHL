@@ -188,5 +188,39 @@ namespace DiscordNHL.Commands
                 await Context.Channel.SendMessageAsync($"An error occured");
             }
         }
+
+        [Command("standings")]
+        [Alias("st")]
+        public async Task GetStandings(string season = null)
+        {
+            try
+            {
+                var isCommandSuccess = false;
+
+                var standings  = await _provider.GetStandings(new List<QueryData>
+                {
+                    new QueryData("season", SeasonYearHelper.Trim(season))
+                });
+
+                if (standings.IsSuccess)
+                {
+                    var embed = new EmbedBuilder()
+                        .AddGeneralFields()
+                        .AddNHLDataFields(standings.Data?.ToStandingsEmbedData(season))
+                        .Build();
+
+                    isCommandSuccess = true;
+                    await Context.Channel.SendMessageAsync(null, false, embed);
+                }
+                if (!isCommandSuccess)
+                {
+                    await Context.Channel.SendMessageAsync($"Standings not found");
+                }
+            }
+            catch
+            {
+                await Context.Channel.SendMessageAsync($"An error occured");
+            }
+        }
     }
 }
