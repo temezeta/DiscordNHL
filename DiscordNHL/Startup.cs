@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Common.Services;
+using Discord.Commands;
 using Discord.WebSocket;
 using DiscordNHL.Services;
 using Microsoft.Extensions.Configuration;
@@ -37,6 +38,8 @@ namespace DiscordNHL
 
             var provider = services.BuildServiceProvider();
             provider.GetRequiredService<CommandHandler>();
+            provider.GetRequiredService<StaticDiscordDataService>();
+            provider.GetRequiredService<StaticNHLDataService>();
 
             await provider.GetRequiredService<StartupService>().StartAsync();
             await Task.Delay(-1);
@@ -58,6 +61,8 @@ namespace DiscordNHL
                 }))
                 .AddSingleton<CommandHandler>()
                 .AddSingleton<StartupService>()
+                .AddSingleton<StaticNHLDataService>()
+                .AddSingleton<StaticDiscordDataService>()
                 .AddSingleton(Configuration)
                 .AddSingleton<INHLDataProvider, NHLDataProvider>();
 

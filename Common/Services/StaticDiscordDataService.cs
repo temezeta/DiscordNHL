@@ -1,12 +1,15 @@
-﻿namespace Common.Services
-{
-    public static class StaticDiscordDataService
-    {
-        public static string BotAvatarUrl;
+﻿using Discord.WebSocket;
 
-        public static void SetBotAvatarUrl(string url) 
+namespace Common.Services
+{
+    public class StaticDiscordDataService
+    {
+        private static DiscordSocketClient Discord;
+        public static string BotAvatarUrl => Discord.CurrentUser.GetAvatarUrl() ?? Discord.CurrentUser.GetDefaultAvatarUrl();
+
+        public StaticDiscordDataService(DiscordSocketClient discord) 
         {
-            BotAvatarUrl = url;
+            Discord = discord;
         }
     }
 }

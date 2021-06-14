@@ -6,7 +6,7 @@ namespace Common.Models
     {
         public bool IsSuccess => HttpResponseMessage.IsSuccessStatusCode;
         public HttpResponseMessage HttpResponseMessage { get; }
-        public T? Data { get; set; }
+        public T Data { get; set; }
 
         public ApiResponse(HttpResponseMessage httpResponseMessage) { HttpResponseMessage = httpResponseMessage; }
     }

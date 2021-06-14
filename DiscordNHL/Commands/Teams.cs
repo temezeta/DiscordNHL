@@ -167,33 +167,5 @@ namespace DiscordNHL.Commands
                 await Context.Channel.SendMessageAsync($"An error occured");
             }
         }
-
-        private async Task<int> GetTeamIdByAbbreviation(string abbreviation) {
-            var abbrev = abbreviation.ToUpper();
-
-            if (StaticDataService.TeamIdByAbbreviation == null)
-            {
-                var response = await _provider.GetTeams();
-
-                if (response.IsSuccess)
-                {
-                    StaticDataService.SetTeamIds(response.Data);
-                } 
-                else
-                {
-                    throw new ArgumentNullException();
-                }
-            }
-
-
-            if (StaticDataService.TeamIdByAbbreviation.TryGetValue(abbrev, out int teamId))
-            {
-                return teamId;
-            }
-            else
-            {
-                return -1;
-            }
-        }
     }
 }

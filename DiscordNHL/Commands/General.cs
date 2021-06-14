@@ -1,4 +1,5 @@
-﻿using Discord.Commands;
+﻿using Common.Services;
+using Discord.Commands;
 using System.Threading.Tasks;
 
 namespace DiscordNHL.Commands
@@ -11,7 +12,7 @@ namespace DiscordNHL.Commands
         [Command("ping")]
         public async Task Ping()
         {
-            await Context.Channel.SendMessageAsync("Pong");
+            await Context.Channel.SendMessageAsync(StaticDiscordDataService.BotAvatarUrl);
         }
     }
 }

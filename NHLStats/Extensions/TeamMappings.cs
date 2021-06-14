@@ -166,8 +166,7 @@ namespace NHLStats.Extensions
             var builder = new StringBuilder();
 
             games = games
-                .Where(it => it.GameDate != null 
-                && it.Teams?.Home?.Team != null 
+                .Where(it => it.Teams?.Home?.Team != null 
                 && it.Teams?.Away?.Team != null
                 && it.Venue != null)
                 .ToList();
