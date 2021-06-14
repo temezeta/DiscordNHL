@@ -38,8 +38,13 @@ namespace DiscordNHL.Services
             return TeamIdByAbbreviation;
         }
 
-        public static async Task<int> GetTeamIdByAbbreviation(string abbreviation) 
+        public static async Task<int?> GetTeamIdByAbbreviation(string abbreviation) 
         {
+            if (abbreviation == null) 
+            {
+                return null;
+            }
+
             abbreviation = abbreviation.ToUpper();
 
             var teamIds = await GetTeamIds();
@@ -50,7 +55,7 @@ namespace DiscordNHL.Services
             }
             else
             {
-                return -1;
+                return null;
             }
         }
     }

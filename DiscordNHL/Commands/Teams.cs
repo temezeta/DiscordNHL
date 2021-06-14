@@ -22,14 +22,13 @@ namespace DiscordNHL.Commands
         {
             try
             {
-                var id = await GetTeamIdByAbbreviation(abbreviation);
+                var id = await StaticNHLDataService.GetTeamIdByAbbreviation(abbreviation);
 
-                var response = await _provider.GetTeamById(id);
+                var response = await _provider.GetTeamById(id ?? -1);
                 var isCommandSuccess = false;
 
                 if (response.IsSuccess) {
                     var team = response.Data.Teams.FirstOrDefault();
-
                     if (team != null)
                     {
 
@@ -59,9 +58,9 @@ namespace DiscordNHL.Commands
         {
             try
             {
-                var id = await GetTeamIdByAbbreviation(abbreviation);
+                var id = await StaticNHLDataService.GetTeamIdByAbbreviation(abbreviation);
 
-                var response = await _provider.GetFullTeamById(id, season);
+                var response = await _provider.GetFullTeamById(id ?? -1, season);
                 var isCommandSuccess = false;
 
                 if (response.IsSuccess)
@@ -98,9 +97,9 @@ namespace DiscordNHL.Commands
         {
             try
             {
-                var id = await GetTeamIdByAbbreviation(abbreviation);
+                var id = await StaticNHLDataService.GetTeamIdByAbbreviation(abbreviation);
 
-                var response = await _provider.GetFullTeamById(id, season);
+                var response = await _provider.GetFullTeamById(id ?? -1, season);
                 var isCommandSuccess = false;
 
                 if (response.IsSuccess)
@@ -130,36 +129,35 @@ namespace DiscordNHL.Commands
             }
         }
 
-        [Command("upcoming")]
-        [Alias("u")]
-        public async Task GetTeamUpcomingGamesByAbbreviation(string abbreviation) 
+        [Command("games")]
+        [Alias("g")]
+        public async Task GetGames(string abbreviation, string startDate = null, string endDate = null) 
         {
             try
             {
-                var id = await GetTeamIdByAbbreviation(abbreviation);
+                abbreviation = abbreviation.ToUpper() == "ALL" ? null : abbreviation;
 
-                var response = await _provider.GetFullTeamById(id);
+                var id = await StaticNHLDataService.GetTeamIdByAbbreviation(abbreviation);
                 var isCommandSuccess = false;
+                var teams = id != null ? await _provider.GetTeamById(id.Value) : null;
+                var schedule = await _provider.GetSchedule(id, startDate, endDate);
 
-                if (response.IsSuccess)
+                if (schedule.IsSuccess)
                 {
-                    var team = response.Data.Teams.FirstOrDefault();
+                    var team = teams?.Data?.Teams?.FirstOrDefault();
+                    var games = schedule.Data;
 
-                    if (team != null)
-                    {
+                    var embed = new EmbedBuilder()
+                        .AddGeneralFields()
+                        .AddNHLDataFields(games.ToGamesEmbedData(team))
+                        .Build();
 
-                        var embed = new EmbedBuilder()
-                            .AddGeneralFields()
-                            .AddNHLDataFields(team.ToGamesEmbedData(false))
-                            .Build();
-
-                        isCommandSuccess = true;
-                        await Context.Channel.SendMessageAsync(null, false, embed);
-                    }
+                    isCommandSuccess = true;
+                    await Context.Channel.SendMessageAsync(null, false, embed);
                 }
                 if (!isCommandSuccess)
                 {
-                    await Context.Channel.SendMessageAsync($"Team upcoming schedule with abbreviation {abbreviation} not found");
+                    await Context.Channel.SendMessageAsync($"Schedule not found");
                 }
             }
             catch

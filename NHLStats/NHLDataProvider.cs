@@ -3,6 +3,7 @@ using Common.Services;
 using NHLStats.Dtos;
 using NHLStats.Helpers;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace NHLStats
@@ -42,5 +43,20 @@ namespace NHLStats
 
             return await GetAsync<TeamsDto>(url);
         }
+
+        public async Task<ApiResponse<GameScheduleDto>> GetSchedule(int? teamId = null, string startDate = null, string endDate = null) 
+        {
+            var builder = new StringBuilder("schedule?");
+
+            var query = string.Join("&",
+                teamId != null ? $"teamId={teamId}" : null,
+                startDate != null ? $"startDate={startDate}" : null,
+                endDate != null ? $"endDate={endDate}" : null);
+
+            builder.Append(query);
+
+            return await GetAsync<GameScheduleDto>(builder.ToString());
+        }
+
     }
 }

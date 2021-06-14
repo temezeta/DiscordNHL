@@ -120,18 +120,20 @@ namespace NHLStats.Extensions
             return embedData;
         }
 
-        public static EmbedData ToGamesEmbedData(this TeamDto team, bool previousGames = false) 
+        public static EmbedData ToGamesEmbedData(this GameScheduleDto schedule, TeamDto team = null) 
         {
             var embedData = new EmbedData
             {
-                Title = team.Name,
-                Description = $"{(previousGames ? "Previous" : "Upcoming")} games for the {team.TeamName}",
-                Url = team.OfficialSiteUrl
+                Title = "Schedule",
+                Data = new List<EmbedValue>()
             };
 
-            embedData.Data = new List<EmbedValue>();
-
-            var schedule = previousGames ? team.PreviousGameSchedule : team.NextGameSchedule;
+            if (team != null)
+            {
+                embedData.Title = team.Name;
+                embedData.Description = $"Games for the {team.TeamName}";
+                embedData.Url = team.OfficialSiteUrl;
+            }
 
             if (schedule?.Dates != null)
             {
@@ -146,7 +148,7 @@ namespace NHLStats.Extensions
 
             if (embedData.Data?.Count == 0)
             {
-                embedData.Description = $"No {(previousGames ? "previous" : "upcoming")} games found";
+                embedData.Description = $"No games found";
             }
 
             return embedData;
