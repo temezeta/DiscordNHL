@@ -21,11 +21,11 @@ namespace DiscordNHL.Commands
             _provider = provider;
         }
         [Command("")]
-        public async Task GetTeamByAbbreviation(string abbreviation)
+        public async Task GetTeamBySearchString(string searchString)
         {
             try
             {
-                var id = await StaticNHLDataService.GetTeamIdByAbbreviation(abbreviation);
+                var id = await StaticNHLDataService.GetTeamIdBySearchString(searchString);
 
                 var response = await _provider.GetTeamById(id);
 
@@ -48,7 +48,7 @@ namespace DiscordNHL.Commands
                 }
                 if(!isCommandSuccess)
                 {
-                    await Context.Channel.SendMessageAsync($"Team with abbreviation {abbreviation} not found");
+                    await Context.Channel.SendMessageAsync($"Team with search {searchString} not found");
                 }
             }
             catch
@@ -59,11 +59,11 @@ namespace DiscordNHL.Commands
 
         [Command("roster")]
         [Alias("r")]
-        public async Task GetTeamRosterByAbbreviation(string abbreviation, string season = null)
+        public async Task GetTeamRosterBySearchString(string searchString, string season = null)
         {
             try
             {
-                var id = await StaticNHLDataService.GetTeamIdByAbbreviation(abbreviation);
+                var id = await StaticNHLDataService.GetTeamIdBySearchString(searchString);
 
                 var response = await _provider.GetTeamById(id, new List<QueryData>
                 {
@@ -92,7 +92,7 @@ namespace DiscordNHL.Commands
 
                 if (!isCommandSuccess) 
                 {
-                    await Context.Channel.SendMessageAsync($"Team roster with abbreviation {abbreviation} not found");
+                    await Context.Channel.SendMessageAsync($"Team roster with search {searchString} not found");
                 }
             }
             catch
@@ -103,11 +103,11 @@ namespace DiscordNHL.Commands
 
         [Command("stats")]
         [Alias("s")]
-        public async Task GetTeamStatsByAbbreviation(string abbreviation, string season = null) 
+        public async Task GetTeamStatsBySearchString(string searchString, string season = null) 
         {
             try
             {
-                var id = await StaticNHLDataService.GetTeamIdByAbbreviation(abbreviation);
+                var id = await StaticNHLDataService.GetTeamIdBySearchString(searchString);
 
                 var response = await _provider.GetTeamById(id, new List<QueryData>
                 {
@@ -135,7 +135,7 @@ namespace DiscordNHL.Commands
                 }
                 if(!isCommandSuccess)
                 {
-                    await Context.Channel.SendMessageAsync($"Team stats with abbreviation {abbreviation} not found");
+                    await Context.Channel.SendMessageAsync($"Team stats with search {searchString} not found");
                 }
             }
             catch
@@ -146,13 +146,13 @@ namespace DiscordNHL.Commands
 
         [Command("games")]
         [Alias("g")]
-        public async Task GetGames(string abbreviation, string startDate = null, string endDate = null) 
+        public async Task GetGames(string searchString, string startDate = null, string endDate = null) 
         {
             try
             {
-                abbreviation = abbreviation.ToUpper() == "ALL" ? null : abbreviation;
+                searchString = searchString.ToUpper() == "ALL" ? null : searchString;
 
-                var id = await StaticNHLDataService.GetTeamIdByAbbreviation(abbreviation);
+                var id = await StaticNHLDataService.GetTeamIdBySearchString(searchString);
 
                 var isCommandSuccess = false;
 
@@ -160,7 +160,7 @@ namespace DiscordNHL.Commands
 
                 var schedule = await _provider.GetSchedule(new List<QueryData>
                 {
-                    new QueryData("id", id),
+                    new QueryData("teamId", id),
                     new QueryData("startDate", startDate),
                     new QueryData("endDate", endDate)
                 });
