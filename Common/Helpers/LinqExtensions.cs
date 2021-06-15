@@ -7,14 +7,26 @@ namespace Common.Helpers
 {
     public static class LinqExtensions
     {
+        private const int MIN_MATCH_LENGTH = 3;
+
         public static T GetClosestMatch<T>(this IEnumerable<T> source, string searchString, Func<T, string> keySelector) where T : class
         {
-            if (source == null)
+            if (source == null || searchString.Length < MIN_MATCH_LENGTH)
             {
                 return null;
             }
 
-            return source.MaxBy(it => searchString.LongestCommonSubstring(keySelector(it)).Length).FirstOrDefault();
+            var longestFound = 0;
+
+            var bestMatch = source.MaxBy(it => 
+            {
+                var substringLength = searchString.LongestCommonSubstring(keySelector(it)).Length;
+                longestFound = Math.Max(longestFound, substringLength);
+                return substringLength;
+            }
+            ).FirstOrDefault();
+
+            return longestFound >= MIN_MATCH_LENGTH ? bestMatch : null;
         }
 
         public static string LongestCommonSubstring(this string value, string toCompare)

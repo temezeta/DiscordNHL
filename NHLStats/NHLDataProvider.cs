@@ -25,7 +25,7 @@ namespace NHLStats
         {
             if (id == null)
             {
-                return null;
+                return await CreateApiResponse<TeamsDto>(null);
             }
 
             return await GetAsync<TeamsDto>(BuildUrl($"teams/{id}", queries));

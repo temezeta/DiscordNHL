@@ -4,7 +4,7 @@ namespace Common.Models
 {
     public class ApiResponse<T> where T : class
     {
-        public bool IsSuccess => HttpResponseMessage.IsSuccessStatusCode;
+        public bool IsSuccess => HttpResponseMessage?.IsSuccessStatusCode ?? false;
         public HttpResponseMessage HttpResponseMessage { get; }
         public T Data { get; set; }
 

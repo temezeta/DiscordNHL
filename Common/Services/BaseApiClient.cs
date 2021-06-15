@@ -36,7 +36,7 @@ namespace Common.Services
             return await CreateApiResponse<T>(await HttpClient.PutAsJsonAsync(url, payload));
         }
 
-        public static string BuildUrl(string baseUrl, IList<QueryData> queries = null) 
+        protected static string BuildUrl(string baseUrl, IList<QueryData> queries = null) 
         {
             var builder = new StringBuilder(baseUrl.TrimStart('/'));
 
@@ -50,11 +50,11 @@ namespace Common.Services
             return builder.ToString();
         }
 
-        private async Task<ApiResponse<T>> CreateApiResponse<T>(HttpResponseMessage message) where T : class
+        protected static async Task<ApiResponse<T>> CreateApiResponse<T>(HttpResponseMessage message) where T : class
         {
             return new ApiResponse<T>(message)
             {
-                Data = message.IsSuccessStatusCode ? JsonConvert.DeserializeObject<T>(await message.Content.ReadAsStringAsync()) : null,
+                Data = message?.IsSuccessStatusCode == true ? JsonConvert.DeserializeObject<T>(await message.Content.ReadAsStringAsync()) : null,
             };
         }
     }

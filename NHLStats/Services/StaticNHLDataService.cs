@@ -58,14 +58,7 @@ namespace DiscordNHL.Services
 
             var team = teamCache.FirstOrDefault(it => it.Abbreviation == searchString) ?? teamCache.GetClosestMatch(searchString, it => it.Name.ToUpper());
 
-            if (team != null)
-            {
-                return team.Id;
-            }
-            else
-            {
-                return null;
-            }
+            return team?.Id;
         }
     }
 }

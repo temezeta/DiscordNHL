@@ -158,17 +158,17 @@ namespace DiscordNHL.Commands
 
                 var teams = await _provider.GetTeamById(id);
 
-                var schedule = await _provider.GetSchedule(new List<QueryData>
+                var response = await _provider.GetSchedule(new List<QueryData>
                 {
                     new QueryData("teamId", id),
                     new QueryData("startDate", startDate),
                     new QueryData("endDate", endDate)
                 });
 
-                if (schedule.IsSuccess)
+                if (response.IsSuccess)
                 {
                     var team = teams?.Data?.Teams?.FirstOrDefault();
-                    var games = schedule.Data;
+                    var games = response.Data;
 
                     var embed = new EmbedBuilder()
                         .AddGeneralFields()
@@ -197,16 +197,16 @@ namespace DiscordNHL.Commands
             {
                 var isCommandSuccess = false;
 
-                var standings  = await _provider.GetStandings(new List<QueryData>
+                var response  = await _provider.GetStandings(new List<QueryData>
                 {
                     new QueryData("season", SeasonYearHelper.Trim(season))
                 });
 
-                if (standings.IsSuccess)
+                if (response.IsSuccess)
                 {
                     var embed = new EmbedBuilder()
                         .AddGeneralFields()
-                        .AddNHLDataFields(standings.Data?.ToStandingsEmbedData(season))
+                        .AddNHLDataFields(response.Data?.ToStandingsEmbedData(season))
                         .Build();
 
                     isCommandSuccess = true;
