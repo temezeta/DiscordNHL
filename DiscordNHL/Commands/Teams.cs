@@ -2,7 +2,6 @@
 using Discord.Commands;
 using NHLStats;
 using DiscordNHL.Services;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using NHLStats.Extensions;
@@ -15,11 +14,12 @@ namespace DiscordNHL.Commands
     [Group("teams")]
     public class Teams : ModuleBase
     {
-        public readonly INHLDataProvider _provider;
+        private readonly INHLDataProvider _provider;
         public Teams(INHLDataProvider provider)
         {
             _provider = provider;
         }
+
         [Command("")]
         public async Task GetTeamBySearchString(string searchString)
         {
@@ -222,5 +222,57 @@ namespace DiscordNHL.Commands
                 await Context.Channel.SendMessageAsync($"An error occured");
             }
         }
+
+        [Command("favourite-roster")]
+        [Alias("fr")]
+        public async Task GetFavouriteTeamRoster(string season = null) 
+        {
+            var teamName = StaticNHLDataService.GetFavouriteTeamName();
+
+            if (teamName == null)
+            {
+                await Context.Channel.SendMessageAsync("You do not have a favourite team set.");
+            }
+            else
+            {
+                await GetTeamRosterBySearchString(teamName, season);
+            }
+
+        }
+
+        [Command("favourite-stats")]
+        [Alias("fs")]
+        public async Task GetFavouriteTeamStats(string season = null)
+        {
+            var teamName = StaticNHLDataService.GetFavouriteTeamName();
+
+            if (teamName == null)
+            {
+                await Context.Channel.SendMessageAsync("You do not have a favourite team set.");
+            }
+            else
+            {
+                await GetTeamStatsBySearchString(teamName, season);
+            }
+
+        }
+
+        [Command("favourite-games")]
+        [Alias("fg")]
+        public async Task GetFavouriteTeamGames(string startDate = null, string endDate = null)
+        {
+            var teamName = StaticNHLDataService.GetFavouriteTeamName();
+
+            if (teamName == null)
+            {
+                await Context.Channel.SendMessageAsync("You do not have a favourite team set.");
+            }
+            else
+            {
+                await GetGames(teamName, startDate, endDate);
+            }
+
+        }
+
     }
 }

@@ -9,6 +9,7 @@ namespace DiscordNHL.Services
 {
     public class StaticNHLDataService
     {
+        private static int? FavouriteTeamId;
         private static IList<CacheData> TeamIdByAbbreviation;
         private static INHLDataProvider _provider;
 
@@ -59,6 +60,32 @@ namespace DiscordNHL.Services
             var team = teamCache.FirstOrDefault(it => it.Abbreviation == searchString) ?? teamCache.GetClosestMatch(searchString, it => it.Name.ToUpper());
 
             return team?.Id;
+        }
+    
+        public static async Task<string> SetFavoriteTeam(string favouriteTeam) 
+        {
+            FavouriteTeamId = await GetTeamIdBySearchString(favouriteTeam);
+
+            return TeamIdByAbbreviation.FirstOrDefault(it => it.Id == FavouriteTeamId)?.Name;
+
+        }
+
+        public static string GetFavouriteTeamName()
+        {
+            if (!FavouriteTeamId.HasValue)
+            {
+                return null;
+            }
+
+            var team = TeamIdByAbbreviation.FirstOrDefault(it => it.Id == FavouriteTeamId);
+
+            if (team == null) 
+            {
+                return null;
+            }
+
+            return team.Name;
+
         }
     }
 }
